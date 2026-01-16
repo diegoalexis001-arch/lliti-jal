@@ -1,0 +1,9 @@
+{
+  "name": "Liti-jal",
+  "description": "Plataforma premium de gestión legal para LATAM. Optimiza expedientes, tareas y reportes con IA ética y gobernanza de datos.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
