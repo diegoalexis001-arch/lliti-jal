@@ -1,7 +1,27 @@
 
-import { GoogleGenAI, Type, Modality } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 
+/**
+ * Crea una instancia de GoogleGenAI asegurando que siempre use la llave más reciente
+ * del contexto de ejecución (especialmente relevante tras el diálogo de openSelectKey).
+ */
 export const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
+
+/**
+ * Verifica si el usuario tiene una llave seleccionada para modelos que requieren facturación (Veo/Imagen).
+ * Si no la tiene, abre el diálogo de selección.
+ */
+export const ensureBillingKey = async (): Promise<boolean> => {
+  if (typeof window.aistudio?.hasSelectedApiKey !== 'function') return true;
+  
+  const hasKey = await window.aistudio.hasSelectedApiKey();
+  if (!hasKey) {
+    await window.aistudio.openSelectKey();
+    // Asumimos éxito tras el trigger según directrices para evitar bloqueos por race condition
+    return true; 
+  }
+  return true;
+};
 
 export const blobToBase64 = (blob: Blob): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -42,4 +62,13 @@ export const decodeBase64 = (base64: string) => {
     bytes[i] = binaryString.charCodeAt(i);
   }
   return bytes;
+};
+
+export const encodeBase64 = (bytes: Uint8Array) => {
+  let binary = '';
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
 };
